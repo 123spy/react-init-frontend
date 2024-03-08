@@ -1,21 +1,37 @@
-export default [
+﻿export default [
+  {
+    path: "/",
+    layout: false,
+    component: '@/layouts/BasicLayout',
+    routes: [
+      { path: '/', name: '欢迎', icon: 'smile', component: './Welcome' },
+      {
+        path: '/user',
+        name: '用户',
+        routes: [
+          { name: '用户信息', path: '/user/info/:id', component: '@/pages/User/UserInfoPage' },
+          { name: '用户设置', path: '/user/settings', component: '@/pages/User/UserSettingsPage' },
+        ]
+      }
+    ]
+  },
+  {
+    path: "/",
+    layout: false,
+    component: '@/layouts/AdminLayout',
+    routes: [
+      { path: '/admin', name: '欢迎', icon: 'smile', component: './Welcome' },
+      { path: '/admin/user',name: '欢迎', icon: 'smile', component: '@/pages/Admin/AdminUserPage' },
+      { path: '/admin/post',name: '欢迎', icon: 'smile', component: '@/pages/Admin/AdminPostPage' },
+    ]
+  },
   {
     path: '/user',
     layout: false,
-    routes: [{ name: '登录', path: '/user/login', component: './User/Login' }],
-  },
-  { path: '/welcome', name: '欢迎', icon: 'smile', component: './Welcome' },
-  {
-    path: '/admin',
-    name: '管理页',
-    icon: 'crown',
-    access: 'canAdmin',
     routes: [
-      { path: '/admin', redirect: '/admin/sub-page' },
-      { path: '/admin/sub-page', name: '二级管理页', component: './Admin' },
+      { name: '登录', path: '/user/login', component: '@/pages/User/UserLoginPage' },
+      { name: '注册', path: '/user/register', component: '@/pages/User/UserRegisterPage' }
     ],
   },
-  { name: '查询表格', icon: 'table', path: '/list', component: './TableList' },
-  { path: '/', redirect: '/welcome' },
   { path: '*', layout: false, component: './404' },
 ];

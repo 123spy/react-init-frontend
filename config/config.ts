@@ -1,7 +1,6 @@
 // https://umijs.org/config/
 import { defineConfig } from '@umijs/max';
 import { join } from 'path';
-import defaultSettings from './defaultSettings';
 import proxy from './proxy';
 import routes from './routes';
 const { REACT_APP_ENV = 'dev' } = process.env;
@@ -73,11 +72,8 @@ export default defineConfig({
    * @name layout 插件
    * @doc https://umijs.org/docs/max/layout-menu
    */
-  title: 'Ant Design Pro',
-  layout: {
-    locale: true,
-    ...defaultSettings,
-  },
+  title: 'React-Init-Frontend',
+  layout: false,
   /**
    * @name moment2dayjs 插件
    * @description 将项目中的 moment 替换为 dayjs
@@ -128,16 +124,9 @@ export default defineConfig({
    */
   openAPI: [
     {
-      requestLibPath: "import { request } from '@umijs/max'",
-      // 或者使用在线的版本
-      // schemaPath: "https://gw.alipayobjects.com/os/antfincdn/M%24jrzTTYJN/oneapi.json"
-      schemaPath: join(__dirname, 'oneapi.json'),
-      mock: false,
-    },
-    {
-      requestLibPath: "import { request } from '@umijs/max'",
-      schemaPath: 'https://gw.alipayobjects.com/os/antfincdn/CA1dOm%2631B/openapi.json',
-      projectName: 'swagger',
+      requestLibPath: "import request from '@/plugins/axios'",
+      schemaPath: 'http://localhost:8080/api/v2/api-docs',
+      projectName: 'apis',
     },
   ],
   mfsu: {
