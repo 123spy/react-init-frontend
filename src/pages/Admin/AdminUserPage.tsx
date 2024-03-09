@@ -1,7 +1,7 @@
 import {EllipsisOutlined, PlusOutlined} from '@ant-design/icons';
 import type {ActionType, ProColumns} from '@ant-design/pro-components';
 import {ProFormTextArea, ProTable, TableDropdown} from '@ant-design/pro-components';
-import {Button, Dropdown, Form, message, Space, Tag} from 'antd';
+import {Button, Dropdown, Form, message, Popconfirm, Space, Tag} from 'antd';
 import {useRef, useState} from 'react';
 import request from 'umi-request';
 import {
@@ -95,11 +95,15 @@ const AdminUserPage = () => {
       render: (_, item) => {
         return (
           <Space>
-            <Button type={"link"} onClick={
-              () => {
-                onDelete(item?.id);
-              }
-            }>删除</Button>
+            <Popconfirm
+              title="删除用户"
+              description="你确定要删除此用户吗?"
+              onConfirm={() => onDelete(item?.id)}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button type={"link"}>删除</Button>
+            </Popconfirm>
             <ModalForm
               title="新建表单"
               trigger={
