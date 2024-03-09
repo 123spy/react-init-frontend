@@ -32,7 +32,6 @@ const UserInfoPage = () => {
 
   const loadData = async () => {
     const res = await getUserVoByIdUsingGet({id: id});
-    console.log("getUserVoByIdUsingGet", res);
     if (res?.code === 40001) {
       history.push("/404")
     }
@@ -47,7 +46,6 @@ const UserInfoPage = () => {
   }, []);
 
   const onChange = (key: string) => {
-    console.log(key);
     setCurrent(key);
   };
 

@@ -36,8 +36,6 @@ const GlobalHeader = () => {
   ];
 
   const onClick: MenuProps['onClick'] = (e) => {
-    console.log(e.key);
-
     setCurrent(e.key);
     if (e.key === 'home') {
       history.push("/");

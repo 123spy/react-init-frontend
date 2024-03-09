@@ -113,7 +113,6 @@ const AdminUserPage = () => {
               }}
               submitTimeout={2000}
               onFinish={async (values) => {
-                console.log(values);
                 const res = await updateUserUsingPost({...values, id: item?.id});
                 if (res?.code === 0) {
                   await actionRef.current.reload();
@@ -189,9 +188,7 @@ const AdminUserPage = () => {
         actionRef={actionRef}
         cardBordered
         request={async (params, sort, filter) => {
-          console.log(params);
           const res = await listUserByPageUsingPost({...params});
-          console.log(res);
           if (res?.code === 0) {
             return {
               data: res?.data?.records,

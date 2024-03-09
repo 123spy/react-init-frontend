@@ -11,6 +11,7 @@ import GlobalAvatar from "@/components/GlobalAvatar";
 import {APP_LOGO, APP_TITLE} from "@/constants/appConstant";
 import {PageContainer} from "@ant-design/pro-components";
 import {useModel} from "@umijs/max";
+import {useState} from "react";
 
 const menuDataRender = (menuList: MenuDataItem[], access: any) => {
   return menuList.filter((menuItem) => {
@@ -24,6 +25,7 @@ const AdminLayout = () => {
   if (!currentUser || !currentUser?.id || currentUser?.userRole !== 'admin') {
     window.location.href = '/404';
   }
+  const [pathname, setPathname] = useState(window.location.pathname);
 
   return (
     <div>
@@ -34,14 +36,14 @@ const AdminLayout = () => {
         onMenuHeaderClick={() => {
           history.push("/");
         }}
-        activeKey={location.href}
+        location={{pathname}}
         {...siderMenu}
         menuItemRender={(item, dom) => {
-          console.log(item.path);
           return (
             <div
               onClick={() => {
                 history.push(item?.path);
+                setPathname(item?.path)
               }}
             >
               {dom}

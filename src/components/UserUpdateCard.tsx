@@ -5,7 +5,6 @@ import {UploadOutlined} from "@ant-design/icons";
 import {updateMyUserUsingPost} from "@/services/apis/userController";
 
 const onFinish = async (values: any) => {
-  console.log('Success:', values);
   const res = await updateMyUserUsingPost(values);
   if (res?.code === 0) {
     // 获取最新的用户

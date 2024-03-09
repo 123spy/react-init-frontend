@@ -19,9 +19,6 @@ import {
 } from '@ant-design/pro-components';
 import {deletePostUsingPost, listPostVoByPageUsingPost, updatePostUsingPost} from "@/services/apis/postController";
 import {Link} from "@@/exports";
-import {ProFormList} from "@ant-design/pro-form/lib";
-import TagList from "@/components/TagList";
-import {ProFormContext} from "@ant-design/pro-utils/lib";
 
 const AdminPostPage = () => {
   const actionRef = useRef<ActionType>();
@@ -114,7 +111,6 @@ const AdminPostPage = () => {
               }}
               submitTimeout={2000}
               onFinish={async (values) => {
-                console.log(values);
                 const res = await updatePostUsingPost({...values, id: item?.id});
                 if (res?.code === 0) {
                   await actionRef.current.reload();
@@ -154,10 +150,7 @@ const AdminPostPage = () => {
         actionRef={actionRef}
         cardBordered
         request={async (params, sort, filter) => {
-          console.log(params);
           const res = await listPostVoByPageUsingPost({...params});
-          // const res = await listUserByPageUsingPost({...params});
-          console.log(res);
           if (res?.code === 0) {
             return {
               data: res?.data?.records,

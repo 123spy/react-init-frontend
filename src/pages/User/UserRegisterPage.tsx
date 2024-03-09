@@ -28,7 +28,6 @@ export default () => {
   const {token} = theme.useToken();
   const [loginType, setLoginType] = useState<LoginType>('account');
   const onRegister = async (values) => {
-    console.log("注册", values);
     const res = await userRegisterUsingPost(values);
     if (res.code === 0) {
       history.push("/user/login");
