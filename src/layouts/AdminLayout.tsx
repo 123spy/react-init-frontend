@@ -8,7 +8,7 @@ import siderMenu from "../../config/adminSiderMenu";
 import {Link, useAccess} from "@@/exports";
 import {BellOutlined, QuestionCircleOutlined} from "@ant-design/icons";
 import GlobalAvatar from "@/components/GlobalAvatar";
-import {APP_TITLE} from "@/constants/appConstant";
+import {APP_LOGO, APP_TITLE} from "@/constants/appConstant";
 import {PageContainer} from "@ant-design/pro-components";
 import {useModel} from "@umijs/max";
 
@@ -30,11 +30,11 @@ const AdminLayout = () => {
       <ProLayout
         layout={"mix"}
         title={APP_TITLE}
-        logo={null}
+        logo={APP_LOGO}
         onMenuHeaderClick={() => {
           history.push("/");
         }}
-        activeKey={window.location.href}
+        activeKey={location.href}
         {...siderMenu}
         menuItemRender={(item, dom) => {
           console.log(item.path);

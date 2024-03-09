@@ -35,7 +35,7 @@ const AdminUserPage = () => {
     {
       dataIndex: 'id',
       valueType: 'indexBorder',
-      width: 40
+      width: 50
     },
     {
       title: 'id',

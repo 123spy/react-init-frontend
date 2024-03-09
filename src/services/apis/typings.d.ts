@@ -158,7 +158,7 @@ declare namespace API {
     createTime?: string;
     hasThumb?: boolean;
     id?: number;
-    tagList?: string[];
+    tags?: string[];
     thumbNum?: number;
     title?: string;
     updateTime?: string;

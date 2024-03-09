@@ -1,180 +1,184 @@
 import {EllipsisOutlined, PlusOutlined} from '@ant-design/icons';
 import type {ActionType, ProColumns} from '@ant-design/pro-components';
-import {ProTable, TableDropdown} from '@ant-design/pro-components';
-import {Button, Dropdown, Space, Tag} from 'antd';
-import {useRef} from 'react';
+import {ProFormTextArea, ProTable, TableDropdown} from '@ant-design/pro-components';
+import {Button, Dropdown, Form, message, Space, Tag} from 'antd';
+import {useRef, useState} from 'react';
 import request from 'umi-request';
-
-export const waitTimePromise = async (time: number = 100) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(true);
-    }, time);
-  });
-};
-
-export const waitTime = async (time: number = 100) => {
-  await waitTimePromise(time);
-};
-
-type GithubIssueItem = {
-  url: string;
-  id: number;
-  number: number;
-  title: string;
-  labels: {
-    name: string;
-    color: string;
-  }[];
-  state: string;
-  comments: number;
-  created_at: string;
-  updated_at: string;
-  closed_at?: string;
-};
-
-const columns: ProColumns<GithubIssueItem>[] = [
-  {
-    dataIndex: 'index',
-    valueType: 'indexBorder',
-    width: 48,
-  },
-  {
-    title: '标题',
-    dataIndex: 'title',
-    copyable: true,
-    ellipsis: true,
-    tooltip: '标题过长会自动收缩',
-    formItemProps: {
-      rules: [
-        {
-          required: true,
-          message: '此项为必填项',
-        },
-      ],
-    },
-  },
-  {
-    disable: true,
-    title: '状态',
-    dataIndex: 'state',
-    filters: true,
-    onFilter: true,
-    ellipsis: true,
-    valueType: 'select',
-    valueEnum: {
-      all: {text: '超长'.repeat(50)},
-      open: {
-        text: '未解决',
-        status: 'Error',
-      },
-      closed: {
-        text: '已解决',
-        status: 'Success',
-        disabled: true,
-      },
-      processing: {
-        text: '解决中',
-        status: 'Processing',
-      },
-    },
-  },
-  {
-    disable: true,
-    title: '标签',
-    dataIndex: 'labels',
-    search: false,
-    renderFormItem: (_, {defaultRender}) => {
-      return defaultRender(_);
-    },
-    render: (_, record) => (
-      <Space>
-        {record.labels.map(({name, color}) => (
-          <Tag color={color} key={name}>
-            {name}
-          </Tag>
-        ))}
-      </Space>
-    ),
-  },
-  {
-    title: '创建时间',
-    key: 'showTime',
-    dataIndex: 'created_at',
-    valueType: 'date',
-    sorter: true,
-    hideInSearch: true,
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'created_at',
-    valueType: 'dateRange',
-    hideInTable: true,
-    search: {
-      transform: (value) => {
-        return {
-          startTime: value[0],
-          endTime: value[1],
-        };
-      },
-    },
-  },
-  {
-    title: '操作',
-    valueType: 'option',
-    key: 'option',
-    render: (text, record, _, action) => [
-      <a
-        key="editable"
-        onClick={() => {
-          action?.startEditable?.(record.id);
-        }}
-      >
-        编辑
-      </a>,
-      <a href={record.url} target="_blank" rel="noopener noreferrer" key="view">
-        查看
-      </a>,
-      <TableDropdown
-        key="actionGroup"
-        onSelect={() => action?.reload()}
-        menus={[
-          {key: 'copy', name: '复制'},
-          {key: 'delete', name: '删除'},
-        ]}
-      />,
-    ],
-  },
-];
+import {
+  addUserUsingPost,
+  deleteUserUsingPost,
+  listUserByPageUsingPost,
+  updateUserUsingPost
+} from "../../services/apis/userController";
+import {
+  ModalForm,
+  ProForm,
+  ProFormDateRangePicker,
+  ProFormSelect,
+  ProFormText,
+} from '@ant-design/pro-components';
+import {deletePostUsingPost, listPostVoByPageUsingPost, updatePostUsingPost} from "@/services/apis/postController";
+import {Link} from "@@/exports";
+import {ProFormList} from "@ant-design/pro-form/lib";
+import TagList from "@/components/TagList";
+import {ProFormContext} from "@ant-design/pro-utils/lib";
 
 const AdminPostPage = () => {
   const actionRef = useRef<ActionType>();
+
+  const onDelete = async (id) => {
+    const res = await deletePostUsingPost({id});
+    if (res?.code === 0) {
+      await actionRef.current.reload();
+      message.success("删除成功");
+    } else {
+      message.error("删除失败");
+    }
+  }
+
+  // {
+  //   "thumbNum": 0,
+  //   "userId": "1763932296236265473",
+  // }
+
+  const columns: ProColumns<API.PostVO>[] = [
+    {
+      dataIndex: 'id',
+      valueType: 'indexBorder',
+      width: 50
+    },
+    {
+      title: 'id',
+      dataIndex: 'id',
+    },
+    {
+      title: '标题',
+      dataIndex: 'title',
+      // copyable: true,
+      ellipsis: true,
+      tooltip: '标题过长会自动收缩',
+    },
+    {
+      title: '标签',
+      dataIndex: 'tags',
+      ellipsis: true,
+      // hideInSearch: true,
+      render: (_, item) => {
+        if (!item?.tags) {
+          return <></>
+        }
+        return (
+          item?.tags.map((item, index) => {
+            return <Tag key={index} color={'blue'}>{item}</Tag>
+          })
+        )
+      },
+    },
+    {
+      title: '用户名称',
+      copyable: true,
+      ellipsis: true,
+      tooltip: '简介过长会自动收缩',
+      hideInSearch: true,
+      render: (_, item) => {
+        return <Link to={`/user/info/${item?.user?.id}`}>{item?.user?.userName}</Link>
+      }
+    },
+    {
+      title: '点赞数',
+      dataIndex: 'thumbNum',
+      hideInSearch: true,
+    },
+    {
+      title: '操作',
+      hideInSearch: true,
+      valueType: "option",
+      render: (_, item) => {
+        return (
+          <Space>
+            <Button type={"link"} onClick={
+              () => {
+                onDelete(item?.id);
+              }
+            }>删除</Button>
+            <ModalForm
+              title="新建表单"
+              trigger={
+                <Button type="link">
+                  更新
+                </Button>
+              }
+              autoFocusFirstInput
+              modalProps={{
+                destroyOnClose: true,
+              }}
+              submitTimeout={2000}
+              onFinish={async (values) => {
+                console.log(values);
+                const res = await updatePostUsingPost({...values, id: item?.id});
+                if (res?.code === 0) {
+                  await actionRef.current.reload();
+                  message.success("更新成功");
+                } else {
+                  message.error("更新失败");
+                }
+              }}
+              width={800}
+            >
+              <ProFormText
+                name="title"
+                // disabled
+                label="标题"
+                initialValue={item?.title}
+                placeholder={"请输入标题"}
+              />
+              <ProFormTextArea
+                // width="xs"
+                name="content"
+                // disabled
+                label="内容"
+                initialValue={item?.content}
+                placeholder={"请输入内容"}
+              />
+            </ModalForm>
+          </Space>
+        )
+      }
+    }
+  ];
+
   return (
     <div>
-      <ProTable<GithubIssueItem>
+      <ProTable<API.UserVO>
         columns={columns}
         actionRef={actionRef}
         cardBordered
         request={async (params, sort, filter) => {
-          console.log(sort, filter);
-          await waitTime(2000);
-          return request<{
-            data: GithubIssueItem[];
-          }>('https://proapi.azurewebsites.net/github/issues', {
-            params,
-          });
-        }}
-        editable={{
-          type: 'multiple',
+          console.log(params);
+          const res = await listPostVoByPageUsingPost({...params});
+          // const res = await listUserByPageUsingPost({...params});
+          console.log(res);
+          if (res?.code === 0) {
+            return {
+              data: res?.data?.records,
+              success: true,
+              current: res?.data?.current,
+              pageSize: res?.data?.size,
+              total: res?.data?.total
+            }
+          } else {
+            message.error("请求失败");
+          }
+          return {
+            data: [],
+            success: false,
+          };
         }}
         columnsState={{
-          persistenceKey: 'pro-table-singe-demos',
+          persistenceKey: 'user',
           persistenceType: 'localStorage',
           defaultValue: {
             option: {fixed: 'right', disable: true},
-          },
-          onChange(value) {
-            console.log('value: ', value);
           },
         }}
         rowKey="id"
@@ -186,58 +190,46 @@ const AdminPostPage = () => {
             listsHeight: 400,
           },
         }}
-        form={{
-          // 由于配置了 transform，提交的参与与定义的不同这里需要转化一下
-          syncToUrl: (values, type) => {
-            if (type === 'get') {
-              return {
-                ...values,
-                created_at: [values.startTime, values.endTime],
-              };
-            }
-            return values;
-          },
-        }}
-        pagination={{
-          pageSize: 5,
-          onChange: (page) => console.log(page),
-        }}
+        pagination={{showSizeChanger: true}}
         dateFormatter="string"
-        headerTitle="高级表格"
         toolBarRender={() => [
-          <Button
-            key="button"
-            icon={<PlusOutlined/>}
-            onClick={() => {
-              actionRef.current?.reload();
+          <ModalForm
+            trigger={
+              <Button type="primary">
+                <PlusOutlined/>
+                新建
+              </Button>
+            }
+            autoFocusFirstInput
+            modalProps={{
+              destroyOnClose: true,
             }}
-            type="primary"
-          >
-            新建
-          </Button>,
-          <Dropdown
-            key="menu"
-            menu={{
-              items: [
-                {
-                  label: '1st item',
-                  key: '1',
-                },
-                {
-                  label: '2nd item',
-                  key: '1',
-                },
-                {
-                  label: '3rd item',
-                  key: '1',
-                },
-              ],
+            submitTimeout={2000}
+            onFinish={async (values) => {
+              const res = await addUserUsingPost(values);
+              if (res?.code === 0) {
+                await actionRef.current.reload();
+                message.success("提交成功");
+              } else {
+                message.error("提交失败")
+              }
             }}
+            width={800}
           >
-            <Button>
-              <EllipsisOutlined/>
-            </Button>
-          </Dropdown>,
+            <ProFormText
+              name="userName"
+              // disabled
+              label="用户名"
+              placeholder={"请输入用户名称"}
+            />
+            <ProFormText
+              // width="xs"
+              name="userAccount"
+              // disabled
+              label="用户账号"
+              placeholder={"请输入用户账号"}
+            />
+          </ModalForm>
         ]}
       />
     </div>

@@ -7,7 +7,7 @@ import menu from "../../config/basicHeaderMenu";
 import {Link, useAccess} from "@@/exports";
 import {BellOutlined, QuestionCircleOutlined} from "@ant-design/icons";
 import GlobalAvatar from "@/components/GlobalAvatar";
-import {APP_TITLE} from "@/constants/appConstant";
+import {APP_LOGO, APP_TITLE} from "@/constants/appConstant";
 import {PageContainer} from "@ant-design/pro-components";
 
 const menuDataRender = (menuList: MenuDataItem[], access: any) => {
@@ -24,7 +24,7 @@ const BasicLayout = () => {
       <ProLayout
         layout={"top"}
         title={APP_TITLE}
-        logo={null}
+        logo={APP_LOGO}
         onMenuHeaderClick={() => {
           history.push("/");
         }}
